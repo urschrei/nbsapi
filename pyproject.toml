@@ -4,7 +4,7 @@ authors = [
     { name="Stephan Hügel", email="urschrei@gmail.com" }
 ]
 requires-python = ">=3.12"
-license = {file = "LICENSE.md"}
+license = {text = "MIT License"}
 keywords = ["Geo"]
 classifiers = [
     "Programming Language :: Python :: 3.12",
@@ -13,6 +13,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Education",
     "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: GIS"
     ]
@@ -31,3 +32,6 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nbsapi"]
