@@ -1,0 +1,32 @@
+[project]
+name = "nbsapi"
+authors = [
+    { name="Stephan Hügel", email="urschrei@gmail.com" }
+]
+requires-python = ">=3.12"
+license = {file = "LICENSE.md"}
+keywords = ["Geo"]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: GIS"
+    ]
+version = "0.1.0"
+description = "An API for nature-based solutions"
+readme = "README.md"
+dependencies = [
+    "fastapi>=0.112.2",
+    "geojson>=3.1.0",
+    "httpx>=0.27.2",
+    "pytest",
+    "uvicorn",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
