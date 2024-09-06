@@ -47,7 +47,12 @@ mock_solutions = [
 @patch("nbsapi.api.solutions", mock_solutions)
 def test_get_trees_with_bbox(mock_load_solutions):
     # A bbox that includes Central Park, NYC, where the "Shade Trees" solution is located
-    bbox = [-74.1, 40.7, -73.9, 40.8]  # This bbox should include the Central Park point
+    bbox = [
+        -73.968,
+        40.781,
+        -73.962,
+        40.784,
+    ]  # This bbox should include the Central Park point
 
     response = client.get("/solutions/trees", params={"bbox": bbox})
     assert response.status_code == 200
@@ -58,13 +63,34 @@ def test_get_trees_with_bbox(mock_load_solutions):
     assert data[0]["name"] == "Shade Trees"
 
     # Test with a bbox that does not include Central Park, NYC
-    bbox = [-74.2, 40.6, -74.15, 40.7]
+    bbox = [-73.970, 40.785, -73.968, 40.787]
     response = client.get("/solutions/trees", params={"bbox": bbox})
     assert response.status_code == 200
     data = response.json()
 
     # No solutions should be returned since the bbox does not cover Central Park
     assert len(data) == 0
+
+
+# Mock the function that loads the solutions during startup
+@patch("nbsapi.api.lifespan", return_value=None)
+@patch("nbsapi.api.solutions", mock_solutions)
+def test_get_trees_with_large_bbox(mock_load_solutions):
+    # A bbox that includes a much larger area, designed to fail (larger than 1 square kilometer)
+    # This is a bounding box of approximately 10 km x 10 km in NYC
+    large_bbox = [-74.3, 40.5, -73.7, 41.0]
+
+    response = client.get("/solutions/trees", params={"bbox": large_bbox})
+
+    # The response should fail with a 400 status due to the large bounding box
+    assert response.status_code == 400
+    assert (
+        "Bounding box area exceeds the maximum limit of 1 square kilometer"
+        in response.json()["detail"]
+    )
+
+
+# This ensures the test will fail by checking that an exception is raised for an overly large bbox
 
 
 @patch("nbsapi.api.lifespan", return_value=None)
