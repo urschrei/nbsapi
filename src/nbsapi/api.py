@@ -1,6 +1,7 @@
 import json
 import os
 from contextlib import asynccontextmanager
+from enum import Enum
 from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
@@ -33,10 +34,16 @@ app.add_middleware(
 )
 
 
+class Category(str, Enum):
+    heat = "Heat stress mitigation"
+    flood = "Flood mitigation"
+    energy = "Energy efficiency"
+
+
 class NatureBasedSolution(BaseModel):
     name: str
     description: str
-    category: str
+    category: Category
     effectiveness: str
     location: str
     geometry: dict
@@ -68,10 +75,8 @@ def filter_solutions_by_bbox_or_geojson(
 
 @app.get("/solutions", response_model=List[NatureBasedSolution])
 def get_solutions(
-    category: str = Query(
-        ...,
-        enum=["heat", "flooding"],
-        description="The category of nature-based solutions to retrieve. Options are 'heat' for excess heat mitigation and 'flooding' for flood mitigation.",
+    category: Category = Query(
+        ..., description="The category of nature-based solutions to retrieve."
     ),
     bbox: Optional[List[float]] = Query(
         None,
