@@ -12,7 +12,7 @@ mock_solutions = [
     NatureBasedSolution(
         name="Shade Trees",
         description="Trees provide shade, reducing urban heat.",
-        category="heat",
+        category="Heat stress mitigation",
         effectiveness="high",
         location="Central Park, NYC",
         geometry={"type": "Point", "coordinates": [-73.9654, 40.7829]},
@@ -20,7 +20,7 @@ mock_solutions = [
     NatureBasedSolution(
         name="Bioswales",
         description="Bioswales capture and filter stormwater runoff.",
-        category="flooding",
+        category="Flood mitigation",
         effectiveness="moderate",
         location="Greenpoint, NYC",
         geometry={
