@@ -95,10 +95,9 @@ def filter_solutions_by_bbox_or_geojson(
 ) -> List["NatureBasedSolution"]:
     # Define the maximum allowable bounding box area in square meters (1 sq km = 1,000,000 sq meters)
     MAX_BBOX_AREA = 1_000_000.0
-
+    geod = Geod(ellps="WGS84")
     if bbox:
         bbox_shape = box(*bbox)
-        geod = Geod(ellps="WGS84")
         bbox_area, poly_perimeter = geod.geometry_area_perimeter(bbox_shape)
         if bbox_area > MAX_BBOX_AREA:
             raise HTTPException(
@@ -114,6 +113,13 @@ def filter_solutions_by_bbox_or_geojson(
             geojson_shape = shape(geojson)
         except Exception as e:
             raise HTTPException(status_code=400, detail="Invalid GeoJSON provided.")
+
+        geojson_area, poly_perimeter = geod.geometry_area_perimeter(geojson_shape)
+        if geojson_area > MAX_BBOX_AREA:
+            raise HTTPException(
+                status_code=400,
+                detail="GeoJSON input area exceeds the maximum limit of 1 square kilometer.",
+            )
 
         # Filter the solutions based on intersection with the GeoJSON shape
         filtered = [s for s in solutions if geojson_shape.intersects(shape(s.geometry))]
