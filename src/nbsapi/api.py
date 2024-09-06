@@ -125,6 +125,19 @@ def get_solutions(
         None, description="List of adaptation targets to filter by with values > 1"
     ),
 ):
+    # Ensure either bbox or geojson is provided
+    if not bbox and not geojson:
+        raise HTTPException(
+            status_code=400, detail="Either 'bbox' or 'geojson' must be provided."
+        )
+
+    # Prevent both bbox and geojson from being provided simultaneously
+    if bbox and geojson:
+        raise HTTPException(
+            status_code=400,
+            detail="You can provide only one of 'bbox' or 'geojson', not both.",
+        )
+
     # Filter solutions by category
     filtered_solutions = [s for s in solutions if s.category == category]
 
@@ -139,7 +152,7 @@ def get_solutions(
             )
         ]
 
-    # Filter solutions by bounding box or GeoJSON if provided
+    # Filter solutions by bbox or GeoJSON
     if geojson:
         geojson_dict = json.loads(geojson)
         filtered_solutions = filter_solutions_by_bbox_or_geojson(
