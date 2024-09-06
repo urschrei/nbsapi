@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from nbsapi.api import NatureBasedSolution, app
+from nbsapi.api import AdaptationTargetEnum, NatureBasedSolution, app
 
 client = TestClient(app)
 
@@ -11,17 +11,21 @@ client = TestClient(app)
 mock_solutions = [
     NatureBasedSolution(
         name="Shade Trees",
-        description="Trees provide shade, reducing urban heat.",
+        definition="Trees provide shade, reducing urban heat.",
+        specific_details="Planting trees helps to mitigate heat island effects in urban areas.",
+        adaptation_target={AdaptationTargetEnum.heat: 90},
+        cobenefits="Improves air quality",
         category="Heat stress mitigation",
-        effectiveness="high",
         location="Central Park, NYC",
         geometry={"type": "Point", "coordinates": [-73.9654, 40.7829]},
     ),
     NatureBasedSolution(
         name="Bioswales",
-        description="Bioswales capture and filter stormwater runoff.",
+        definition="Bioswales capture and filter stormwater runoff.",
+        specific_details="Bioswales are vegetated channels that slow and filter runoff.",
+        adaptation_target={AdaptationTargetEnum.pluvial_flooding: 80},
+        cobenefits="Supports biodiversity",
         category="Flood mitigation",
-        effectiveness="moderate",
         location="Greenpoint, NYC",
         geometry={
             "type": "Polygon",
