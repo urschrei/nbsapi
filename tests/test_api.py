@@ -1,13 +1,47 @@
 import json
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from nbsapi.api import app
+from nbsapi.api import NatureBasedSolution, app
 
 client = TestClient(app)
 
+# Sample mock data as instances of the NatureBasedSolution model
+mock_solutions = [
+    NatureBasedSolution(
+        name="Shade Trees",
+        description="Trees provide shade, reducing urban heat.",
+        category="heat",
+        effectiveness="high",
+        location="Central Park, NYC",
+        geometry={"type": "Point", "coordinates": [-73.9654, 40.7829]},
+    ),
+    NatureBasedSolution(
+        name="Bioswales",
+        description="Bioswales capture and filter stormwater runoff.",
+        category="flooding",
+        effectiveness="moderate",
+        location="Greenpoint, NYC",
+        geometry={
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [-73.9442, 40.7294],
+                    [-73.9442, 40.7294],
+                    [-73.9442, 40.7294],
+                    [-73.9442, 40.7294],
+                ]
+            ],
+        },
+    ),
+]
 
-def test_get_trees_with_bbox():
+
+# Mock the function that loads the solutions during startup
+@patch("nbsapi.api.lifespan", return_value=None)
+@patch("nbsapi.api.solutions", mock_solutions)
+def test_get_trees_with_bbox(mock_load_solutions):
     # A bbox that includes Central Park, NYC, where the "Shade Trees" solution is located
     bbox = [-74.1, 40.7, -73.9, 40.8]  # This bbox should include the Central Park point
 
@@ -29,7 +63,9 @@ def test_get_trees_with_bbox():
     assert len(data) == 0
 
 
-def test_get_bioswales_with_geojson():
+@patch("nbsapi.api.lifespan", return_value=None)
+@patch("nbsapi.api.solutions", mock_solutions)
+def test_get_bioswales_with_geojson(mock_load_solutions):
     geojson = {
         "type": "Polygon",
         "coordinates": [

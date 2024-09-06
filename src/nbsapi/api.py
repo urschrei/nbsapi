@@ -1,4 +1,6 @@
 import json
+import os
+from contextlib import asynccontextmanager
 from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
@@ -6,11 +8,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from shapely.geometry import box, shape
 
-app = FastAPI()
 
-origins = [
-    "*",
-]
+# Load solutions from JSON fixture on startup
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global solutions
+    json_file_path = os.path.join(os.path.dirname(__file__), "solutions.json")
+    with open(json_file_path, "r") as f:
+        solutions_data = json.load(f)
+        solutions = [NatureBasedSolution(**solution) for solution in solutions_data]
+
+
+app = FastAPI(lifespan=lifespan)
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,35 +41,7 @@ class NatureBasedSolution(BaseModel):
     geometry: dict
 
 
-# Example data
-solutions = [
-    NatureBasedSolution(
-        name="Shade Trees",
-        description="Trees provide shade, reducing urban heat.",
-        category="heat",
-        effectiveness="high",
-        location="Central Park, NYC",
-        geometry={"type": "Point", "coordinates": [-73.9654, 40.7829]},
-    ),
-    NatureBasedSolution(
-        name="Bioswales",
-        description="Bioswales capture and filter stormwater runoff.",
-        category="flooding",
-        effectiveness="moderate",
-        location="Greenpoint, NYC",
-        geometry={
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [-73.9442, 40.7294],
-                    [-73.9442, 40.7294],
-                    [-73.9442, 40.7294],
-                    [-73.9442, 40.7294],
-                ]
-            ],
-        },
-    ),
-]
+solutions = []
 
 
 def filter_solutions_by_bbox_or_geojson(

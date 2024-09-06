@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Shade Trees",
+    "description": "Trees provide shade, reducing urban heat.",
+    "category": "heat",
+    "effectiveness": "high",
+    "location": "Central Park, NYC",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [-73.9654, 40.7829]
+    }
+  },
+  {
+    "name": "Bioswales",
+    "description": "Bioswales capture and filter stormwater runoff.",
+    "category": "flooding",
+    "effectiveness": "moderate",
+    "location": "Greenpoint, NYC",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [-73.9442, 40.7294],
+          [-73.9442, 40.7294],
+          [-73.9442, 40.7294],
+          [-73.9442, 40.7294]
+        ]
+      ]
+    }
+  }
+]
