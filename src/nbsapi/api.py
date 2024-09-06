@@ -36,6 +36,8 @@ app.add_middleware(
 
 
 class AdaptationTargetEnum(str, Enum):
+    """The kinds of protection or enhancement that the NbS provides"""
+
     pluvial_flooding = "Pluvial flooding"
     drought = "Drought"
     heat = "Heat"
@@ -56,7 +58,9 @@ class Category(str, Enum):
 
 class NatureBasedSolution(BaseModel):
     name: str = Field(..., max_length=100)
-    definition: str = Field(..., max_length=500)
+    definition: str = Field(
+        ..., max_length=500, description="Definition and primary function"
+    )
 
     @field_validator("definition")
     def description_length(cls, value):
@@ -77,7 +81,11 @@ class NatureBasedSolution(BaseModel):
         ...,
         description="Adaptation target values (0-100) for each of the following: Pluvial flooding, Drought, Heat, Coastal and Fluvial flooding, Groundwater.",
     )
-    cobenefits: str = Field(..., max_length=100)
+    cobenefits: str = Field(
+        ...,
+        max_length=200,
+        description="Intended positive side effects of the solution",
+    )
     category: Category
     location: str
     geometry: dict
