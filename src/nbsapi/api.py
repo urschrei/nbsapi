@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
     with open(json_file_path, "r") as f:
         solutions_data = json.load(f)
         solutions = [NatureBasedSolution(**solution) for solution in solutions_data]
+    yield
 
 
 app = FastAPI(lifespan=lifespan)
