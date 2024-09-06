@@ -2,11 +2,11 @@ import json
 import os
 from contextlib import asynccontextmanager
 from enum import Enum
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, conint, field_validator
 from shapely.geometry import box, shape
 
 
@@ -34,6 +34,19 @@ app.add_middleware(
 )
 
 
+class AdaptationTargetEnum(str, Enum):
+    pluvial_flooding = "Pluvial flooding"
+    drought = "Drought"
+    heat = "Heat"
+    coastal_fluvial_flooding = "Coastal and Fluvial flooding"
+    groundwater = "Groundwater"
+
+
+class AdaptationTarget(BaseModel):
+    target: AdaptationTargetEnum
+    value: conint(ge=0, le=100)
+
+
 class Category(str, Enum):
     heat = "Heat stress mitigation"
     flood = "Flood mitigation"
@@ -41,17 +54,30 @@ class Category(str, Enum):
 
 
 class NatureBasedSolution(BaseModel):
-    name: str
-    description: str = Field(..., max_length=500)
+    name: str = Field(..., max_length=100)
+    definition: str = Field(..., max_length=500)
 
-    @field_validator("description")
+    @field_validator("definition")
     def description_length(cls, value):
         if len(value) > 500:
-            raise ValueError("Description must be 500 characters or less.")
+            raise ValueError("Definition must be 500 characters or less.")
         return value
 
+    specific_details: str = Field(..., max_length=500)
+
+    @field_validator("specific_details")
+    def spec_detail_length(cls, value):
+        if len(value) > 500:
+            raise ValueError("Specific details must be 500 characters or less.")
+        return value
+
+    # TODO: do we need both category AND adaptation target?
+    adaptation_target: Dict[AdaptationTargetEnum, conint(ge=0, le=100)] = Field(
+        ...,
+        description="Adaptation target values (0-100) for each of the following: Pluvial flooding, Drought, Heat, Coastal and Fluvial flooding, Groundwater.",
+    )
+    cobenefits: str = Field(..., max_length=100)
     category: Category
-    effectiveness: str
     location: str
     geometry: dict
 
@@ -82,7 +108,7 @@ def filter_solutions_by_bbox_or_geojson(
 
 @app.get("/solutions", response_model=List[NatureBasedSolution])
 def get_solutions(
-    category: Category = Query(
+    category: str = Query(
         ..., description="The category of nature-based solutions to retrieve."
     ),
     bbox: Optional[List[float]] = Query(
@@ -95,9 +121,25 @@ def get_solutions(
         None,
         description="GeoJSON polygon specifying the area of interest. The GeoJSON should be passed as a JSON string.",
     ),
+    adaptation_targets: Optional[List[AdaptationTargetEnum]] = Query(
+        None, description="List of adaptation targets to filter by with values > 1"
+    ),
 ):
+    # Filter solutions by category
     filtered_solutions = [s for s in solutions if s.category == category]
 
+    # Filter solutions by adaptation targets if provided
+    if adaptation_targets:
+        filtered_solutions = [
+            s
+            for s in filtered_solutions
+            if any(
+                target in s.adaptation_target and s.adaptation_target[target] > 1
+                for target in adaptation_targets
+            )
+        ]
+
+    # Filter solutions by bounding box or GeoJSON if provided
     if geojson:
         geojson_dict = json.loads(geojson)
         filtered_solutions = filter_solutions_by_bbox_or_geojson(
