@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from shapely.geometry import box, shape
 
 
@@ -44,7 +44,7 @@ class NatureBasedSolution(BaseModel):
     name: str
     description: str = Field(..., max_length=500)
 
-    @validator("description")
+    @field_validator("description")
     def description_length(cls, value):
         if len(value) > 500:
             raise ValueError("Description must be 500 characters or less.")
