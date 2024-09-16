@@ -31,6 +31,7 @@ async def solution_details(
     Get any solution details
     """
     solution = await get_solution(db_session, solution_id)
+    print("Name", solution.name, solution.__dict__)
     return solution
 
 
