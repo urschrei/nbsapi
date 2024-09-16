@@ -32,7 +32,7 @@ class NatureBasedSolution(BaseModel):
         return value
 
     # # TODO: do we need both category AND adaptation target?
-    # targets: Dict[AdaptationTargetEnum, conint(ge=0, le=100)] = Field(
+    # adaptations: Dict[AdaptationTargetEnum, conint(ge=0, le=100)] = Field(
     #     ...,
     #     description="Adaptation target values (0-100) for each of the following: Pluvial flooding, Drought, Heat, Coastal and Fluvial flooding, Groundwater.",
     # )
