@@ -42,7 +42,7 @@ class NatureBasedSolution(Base):
     )
 
     adaptations = association_proxy(
-        "Association",
+        "solution_targets",
         "value",
         creator=lambda k, v: Association(target=k, value=v),
     )
