@@ -1,0 +1,5 @@
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()  # model base class
+from .adaptation_target import AdaptationTarget
+from .naturebasedsolution import NatureBasedSolution, nbs_target_assoc

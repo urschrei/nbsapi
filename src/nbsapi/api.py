@@ -10,6 +10,9 @@ from pydantic import BaseModel, Field, conint, field_validator
 from pyproj import Geod
 from shapely.geometry import box, shape
 
+from nbsapi.config import settings
+from nbsapi.database import sessionmanager
+
 
 # Load solutions from JSON fixture on startup
 @asynccontextmanager
@@ -19,10 +22,13 @@ async def lifespan(app: FastAPI):
     with open(json_file_path, "r") as f:
         solutions_data = json.load(f)
         solutions = [NatureBasedSolution(**solution) for solution in solutions_data]
+    if sessionmanager._engine is not None:
+        # Close the DB connection
+        await sessionmanager.close()
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, title=settings.project_name)
 
 origins = ["*"]
 
