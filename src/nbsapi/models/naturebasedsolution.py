@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from sqlalchemy import Column, ForeignKey, Table
-from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Mapped, attribute_keyed_dict, mapped_column, relationship
 
 from . import Base
@@ -18,7 +18,7 @@ class Association(Base):
     target_id: Mapped[int] = mapped_column(
         ForeignKey("adaptationtarget.id"), primary_key=True
     )
-    tg = relationship("AdaptationTarget")
+    tg = relationship(AdaptationTarget, lazy="joined")
     target = association_proxy("tg", "target")
 
     solution = relationship("NatureBasedSolution", back_populates="solution_targets")
@@ -36,6 +36,7 @@ class NatureBasedSolution(Base):
 
     solution_targets = relationship(
         "Association",
+        lazy="joined",
         back_populates="solution",
         collection_class=attribute_keyed_dict("target"),
         cascade="all, delete-orphan",
