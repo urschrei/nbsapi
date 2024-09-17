@@ -1,13 +1,9 @@
 from __future__ import annotations
 
-from typing import List
-
 from sqlalchemy import Column, ForeignKey, Table
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import Mapped, attribute_keyed_dict, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import Base
-from .adaptation_target import AdaptationTarget
 
 
 class Association(Base):
@@ -18,11 +14,14 @@ class Association(Base):
     target_id: Mapped[int] = mapped_column(
         ForeignKey("adaptationtarget.id"), primary_key=True
     )
-    tg = relationship(AdaptationTarget, lazy="joined")
-    target = association_proxy("tg", "target")
+    tg = relationship("AdaptationTarget", back_populates="solutions")
 
     solution = relationship("NatureBasedSolution", back_populates="solution_targets")
     value: Mapped[int]
+
+    @property
+    def target_obj(self):
+        return self.tg
 
 
 class NatureBasedSolution(Base):
@@ -36,15 +35,9 @@ class NatureBasedSolution(Base):
 
     solution_targets = relationship(
         "Association",
-        lazy="joined",
         back_populates="solution",
-        collection_class=attribute_keyed_dict("target"),
+        lazy="joined",
+        collection_class=list,
         cascade="all, delete-orphan",
-    )
-
-    adaptations = association_proxy(
-        "solution_targets",
-        "value",
-        creator=lambda k, v: Association(target=k, value=v),
     )
     # TODO: geometry

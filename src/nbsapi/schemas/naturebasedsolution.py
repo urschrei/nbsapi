@@ -1,46 +1,60 @@
-from enum import Enum
-from typing import Dict
+from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field, conint, field_validator
-from schemas.adaptationtarget import AdaptationTargetEnum
-
-
-class Category(str, Enum):
-    heat = "Heat stress mitigation"
-    flood = "Flood mitigation"
-    energy = "Energy efficiency"
+from pydantic import BaseModel, Field
+from schemas.adaptationtarget import (
+    # AdaptationAssociation,
+    AdaptationTargetBase,
+    AssociationRead,
+)
 
 
-class NatureBasedSolution(BaseModel):
-    name: str = Field(..., max_length=100)
-    definition: str = Field(
-        ..., max_length=500, description="Definition and primary function"
+class NatureBasedSolutionBase(BaseModel):
+    name: str = Field(..., example="Coastal Restoration")
+    definition: str = Field(..., example="Definition of the solution")
+    cobenefits: str = Field(..., example="Improved biodiversity")
+    specificdetails: str = Field(..., example="Detailed information")
+    location: str = Field(..., example="Coastal Area X")
+
+
+class NatureBasedSolutionCreate(NatureBasedSolutionBase):
+    adaptations: Dict[str, int] = Field(
+        default_factory=dict,
+        description="Mapping of AdaptationTarget IDs to their corresponding values",
+        example={"Heat": 10, "Drought": 20},
     )
 
-    @field_validator("definition")
-    def description_length(cls, value):
-        if len(value) > 500:
-            raise ValueError("Definition must be 500 characters or less.")
-        return value
 
-    specificdetails: str = Field(..., max_length=500)
-
-    @field_validator("specificdetails")
-    def spec_detail_length(cls, value):
-        if len(value) > 500:
-            raise ValueError("Specific details must be 500 characters or less.")
-        return value
-
-    # # TODO: do we need both category AND adaptation target?
-    # adaptations: Dict[AdaptationTargetEnum, conint(ge=0, le=100)] = Field(
-    #     ...,
-    #     description="Adaptation target values (0-100) for each of the following: Pluvial flooding, Drought, Heat, Coastal and Fluvial flooding, Groundwater.",
-    # )
-    cobenefits: str = Field(
-        ...,
-        max_length=200,
-        description="Intended positive side effects of the solution",
+class NatureBasedSolutionUpdate(BaseModel):
+    name: Optional[str] = Field(None, example="Coastal Restoration Updated")
+    definition: Optional[str] = Field(None, example="Updated definition")
+    cobenefits: Optional[str] = Field(None, example="Enhanced ecosystem services")
+    specificdetails: Optional[str] = Field(None, example="Updated detailed information")
+    location: Optional[str] = Field(None, example="Updated Coastal Area Y")
+    adaptations: Optional[Dict[str, int]] = Field(
+        None,
+        description="Optional mapping of AdaptationTarget IDs to their corresponding values",
+        example={"Heat": 15, "Drought": 25},
     )
-    # category: Category
-    location: str
-    # geometry: dict
+
+
+class NatureBasedSolutionRead(NatureBasedSolutionBase):
+    id: int
+    adaptations: List[AssociationRead] = Field(
+        alias="solution_targets",
+        description="List of AdaptationTarget and their corresponding values",
+    )
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+
+# class NatureBasedSolutionRead(NatureBasedSolutionBase):
+#     id: int
+#     adaptations: List[AdaptationAssociation] = Field(
+#         default_factory=list,
+#         description="List of AdaptationTarget and their corresponding values",
+#     )
+
+#     class Config:
+#         orm_mode = True

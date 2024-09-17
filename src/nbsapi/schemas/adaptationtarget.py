@@ -1,18 +1,17 @@
-from enum import Enum
-
-from pydantic import BaseModel, Field, conint, field_validator
+from pydantic import BaseModel
 
 
-class AdaptationTargetEnum(str, Enum):
-    """The kinds of protection or enhancement that the NbS provides"""
+class AdaptationTargetBase(BaseModel):
+    id: int
+    target: str
 
-    pluvial_flooding = "Pluvial flooding"
-    drought = "Drought"
-    heat = "Heat"
-    coastal_fluvial_flooding = "Coastal and Fluvial flooding"
-    groundwater = "Groundwater"
+    class Config:
+        from_attributes = True
 
 
-class AdaptationTarget(BaseModel):
-    target: AdaptationTargetEnum
-    value: conint(ge=0, le=100)
+class AssociationRead(BaseModel):
+    target: AdaptationTargetBase
+    value: int
+
+    class Config:
+        from_attributes = True
