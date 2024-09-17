@@ -17,10 +17,13 @@ class NatureBasedSolutionBase(BaseModel):
 
 
 class NatureBasedSolutionCreate(NatureBasedSolutionBase):
-    adaptations: Dict[str, int] = Field(
-        default_factory=dict,
-        description="Mapping of AdaptationTarget IDs to their corresponding values",
-        example={"Heat": 10, "Drought": 20},
+    adaptations: List[AssociationRead] = Field(
+        default_factory=list,
+        description="List of AdaptationTarget and their corresponding values",
+        example=[
+            {"target": {"id": 1, "target": "Heat"}, "value": 10},
+            {"target": {"id": 2, "target": "Pluvial Flooding"}, "value": 20},
+        ],
     )
 
 
@@ -30,10 +33,13 @@ class NatureBasedSolutionUpdate(BaseModel):
     cobenefits: Optional[str] = Field(None, example="Enhanced ecosystem services")
     specificdetails: Optional[str] = Field(None, example="Updated detailed information")
     location: Optional[str] = Field(None, example="Updated Coastal Area Y")
-    adaptations: Optional[Dict[str, int]] = Field(
+    adaptations: Optional[List[AssociationRead]] = Field(
         None,
-        description="Optional mapping of AdaptationTarget IDs to their corresponding values",
-        example={"Heat": 15, "Drought": 25},
+        description="Optional list of AdaptationTarget and their corresponding values",
+        example=[
+            {"target": {"id": 1, "target": "Heat"}, "value": 10},
+            {"target": {"id": 2, "target": "Pluvial Flooding"}, "value": 20},
+        ],
     )
 
 
@@ -42,6 +48,7 @@ class NatureBasedSolutionRead(NatureBasedSolutionBase):
     adaptations: List[AssociationRead] = Field(
         alias="solution_targets",
         description="List of AdaptationTarget and their corresponding values",
+        default_factory=list,
     )
 
     class Config:
