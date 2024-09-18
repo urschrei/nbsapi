@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 from schemas.adaptationtarget import (
-    AssociationRead,
+    AdaptationTargetRead,
 )
 
 
@@ -15,7 +15,7 @@ class NatureBasedSolutionBase(BaseModel):
 
 
 class NatureBasedSolutionCreate(NatureBasedSolutionBase):
-    adaptations: List[AssociationRead] = Field(
+    adaptations: List[AdaptationTargetRead] = Field(
         default_factory=list,
         description="List of adaptation types and their corresponding values",
         example=[
@@ -31,7 +31,7 @@ class NatureBasedSolutionUpdate(BaseModel):
     cobenefits: Optional[str] = Field(None, example="Enhanced ecosystem services")
     specificdetails: Optional[str] = Field(None, example="Updated detailed information")
     location: Optional[str] = Field(None, example="Updated Coastal Area Y")
-    adaptations: Optional[List[AssociationRead]] = Field(
+    adaptations: Optional[List[AdaptationTargetRead]] = Field(
         None,
         description="List of adaptation types and their corresponding values",
         example=[
@@ -43,7 +43,7 @@ class NatureBasedSolutionUpdate(BaseModel):
 
 class NatureBasedSolutionRead(NatureBasedSolutionBase):
     id: int
-    adaptations: List[AssociationRead] = Field(
+    adaptations: List[AdaptationTargetRead] = Field(
         alias="solution_targets",
         description="List of AdaptationTarget and their corresponding values",
         default_factory=list,

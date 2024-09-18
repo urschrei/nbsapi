@@ -7,7 +7,7 @@ from nbsapi.models import AdaptationTarget, Association
 from nbsapi.models import NatureBasedSolution as NbsDBModel
 from nbsapi.schemas.adaptationtarget import AdaptationTargetBase
 from nbsapi.schemas.naturebasedsolution import (
-    AssociationRead,
+    AdaptationTargetRead,
     NatureBasedSolutionCreate,
     NatureBasedSolutionRead,
 )
@@ -25,7 +25,7 @@ async def build_nbs_schema_from_model(db_solution: NbsDBModel):
         specificdetails=db_solution.specificdetails,
         location=db_solution.location,
         adaptations=[
-            AssociationRead(
+            AdaptationTargetRead(
                 adaptation=AdaptationTargetBase(id=assoc.tg.id, type=assoc.tg.target),
                 value=assoc.value,
             )

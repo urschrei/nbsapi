@@ -11,7 +11,7 @@ class AdaptationTargetBase(BaseModel):
         from_attributes = True
 
 
-class AssociationRead(BaseModel):
+class AdaptationTargetRead(BaseModel):
     "Adaptation targets associated with a Nature-Based Solution"
 
     adaptation: AdaptationTargetBase
