@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from schemas.adaptationtarget import (
     AdaptationTargetRead,
 )
@@ -42,13 +42,10 @@ class NatureBasedSolutionUpdate(BaseModel):
 
 
 class NatureBasedSolutionRead(NatureBasedSolutionBase):
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     id: int
     adaptations: List[AdaptationTargetRead] = Field(
         alias="solution_targets",
         description="List of AdaptationTarget and their corresponding values",
         default_factory=list,
     )
-
-    class Config:
-        from_attributes = True
-        populate_by_name = True
