@@ -2,6 +2,8 @@ from pydantic import BaseModel
 
 
 class AdaptationTargetBase(BaseModel):
+    "An adaptation target"
+
     id: int
     type: str
 
@@ -10,6 +12,8 @@ class AdaptationTargetBase(BaseModel):
 
 
 class AssociationRead(BaseModel):
+    "Adaptation targets associated with a Nature-Based Solution"
+
     adaptation: AdaptationTargetBase
     value: int
 
