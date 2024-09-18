@@ -2,8 +2,6 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 from schemas.adaptationtarget import (
-    # AdaptationAssociation,
-    AdaptationTargetBase,
     AssociationRead,
 )
 
@@ -28,7 +26,7 @@ class NatureBasedSolutionCreate(NatureBasedSolutionBase):
 
 
 class NatureBasedSolutionUpdate(BaseModel):
-    name: Optional[str] = Field(None, example="Coastal Restoration Updated")
+    name: Optional[str] = Field(None, example="Riprap")
     definition: Optional[str] = Field(None, example="Updated definition")
     cobenefits: Optional[str] = Field(None, example="Enhanced ecosystem services")
     specificdetails: Optional[str] = Field(None, example="Updated detailed information")
@@ -54,14 +52,3 @@ class NatureBasedSolutionRead(NatureBasedSolutionBase):
     class Config:
         from_attributes = True
         populate_by_name = True
-
-
-# class NatureBasedSolutionRead(NatureBasedSolutionBase):
-#     id: int
-#     adaptations: List[AdaptationAssociation] = Field(
-#         default_factory=list,
-#         description="List of AdaptationTarget and their corresponding values",
-#     )
-
-#     class Config:
-#         orm_mode = True
