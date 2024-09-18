@@ -14,7 +14,7 @@ class Association(Base):
     target_id: Mapped[int] = mapped_column(
         ForeignKey("adaptationtarget.id"), primary_key=True
     )
-    tg = relationship("AdaptationTarget", back_populates="solutions")
+    tg = relationship("AdaptationTarget", lazy="joined", back_populates="solutions")
 
     solution = relationship("NatureBasedSolution", back_populates="solution_targets")
     value: Mapped[int]
