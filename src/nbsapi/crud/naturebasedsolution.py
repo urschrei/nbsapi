@@ -13,6 +13,28 @@ from nbsapi.schemas.naturebasedsolution import (
 )
 
 
+async def build_nbs_schema_from_model(db_solution: NbsDBModel):
+    """FastAPI seems to struggle with automatic serialisation of the the db model to the schema
+    so we're doing it manually for now
+    """
+    solution_read = NatureBasedSolutionRead(
+        id=db_solution.id,
+        name=db_solution.name,
+        definition=db_solution.definition,
+        cobenefits=db_solution.cobenefits,
+        specificdetails=db_solution.specificdetails,
+        location=db_solution.location,
+        adaptations=[
+            AssociationRead(
+                target=AdaptationTargetBase(id=assoc.tg.id, target=assoc.tg.target),
+                value=assoc.value,
+            )
+            for assoc in db_solution.solution_targets
+        ],
+    )
+    return solution_read
+
+
 async def get_solution(db_session: AsyncSession, solution_id: int):
     solution = (
         await db_session.scalars(
@@ -23,54 +45,7 @@ async def get_solution(db_session: AsyncSession, solution_id: int):
     ).first()
     if not solution:
         raise HTTPException(status_code=404, detail="Solution not found")
-    solution_read = NatureBasedSolutionRead(
-        id=solution.id,
-        name=solution.name,
-        definition=solution.definition,
-        cobenefits=solution.cobenefits,
-        specificdetails=solution.specificdetails,
-        location=solution.location,
-        adaptations=[
-            AssociationRead(
-                target=AdaptationTargetBase(id=assoc.tg.id, target=assoc.tg.target),
-                value=assoc.value,
-            )
-            for assoc in solution.solution_targets
-        ],
-    )
-    return solution_read
-
-
-# async def create_nature_based_solution(
-#     db_session: AsyncSession, solution: NatureBasedSolutionCreate
-# ):
-#     db_solution = NbsDBModel(
-#         name=solution.name,
-#         definition=solution.definition,
-#         cobenefits=solution.cobenefits,
-#         specificdetails=solution.specificdetails,
-#         location=solution.location,
-#     )
-#     for adaptation in solution.adaptations:
-#         target_id = adaptation.target.id
-#         value = adaptation.value
-#         target = (
-#             await db_session.scalars(
-#                 select(AdaptationTarget).where(AdaptationTarget.id == target_id)
-#             )
-#         ).first()
-#         # db_session.get(AdaptationTarget, target_id)
-#         if not target:
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail=f"AdaptationTarget with id {target_id} not found",
-#             )
-#         association = Association(tg=target, value=value)
-#         db_solution.solution_targets.append(association)
-#     db_session.add(db_solution)
-#     db_session.commit()
-#     db_session.refresh(db_solution)
-#     return db_solution
+    return await build_nbs_schema_from_model(solution)
 
 
 async def create_nature_based_solution(
@@ -98,7 +73,8 @@ async def create_nature_based_solution(
             )
         association = Association(tg=target, value=value)
         db_solution.solution_targets.append(association)
+        db_session.add(association)
     db_session.add(db_solution)
     await db_session.commit()
     await db_session.refresh(db_solution)
-    return db_solution
+    return await build_nbs_schema_from_model(db_solution)
