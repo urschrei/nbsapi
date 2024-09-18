@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from nbsapi.api.routers.adaptationtargets import router as adaptations_router
 from nbsapi.api.routers.naturebasedsolutions import router as solutions_router
 from nbsapi.config import settings
 from nbsapi.database import sessionmanager
@@ -33,6 +34,7 @@ async def root():
 
 # Routers
 app.include_router(solutions_router)
+app.include_router(adaptations_router)
 
 
 origins = ["*"]
