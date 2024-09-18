@@ -3,14 +3,14 @@ from pydantic import BaseModel
 
 class AdaptationTargetBase(BaseModel):
     id: int
-    target: str
+    type: str
 
     class Config:
         from_attributes = True
 
 
 class AssociationRead(BaseModel):
-    target: AdaptationTargetBase
+    adaptation: AdaptationTargetBase
     value: int
 
     class Config:

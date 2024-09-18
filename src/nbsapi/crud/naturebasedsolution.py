@@ -26,7 +26,7 @@ async def build_nbs_schema_from_model(db_solution: NbsDBModel):
         location=db_solution.location,
         adaptations=[
             AssociationRead(
-                target=AdaptationTargetBase(id=assoc.tg.id, target=assoc.tg.target),
+                adaptation=AdaptationTargetBase(id=assoc.tg.id, type=assoc.tg.target),
                 value=assoc.value,
             )
             for assoc in db_solution.solution_targets
@@ -59,7 +59,7 @@ async def create_nature_based_solution(
         location=solution.location,
     )
     for adaptation in solution.adaptations:
-        target_id = adaptation.target.id
+        target_id = adaptation.adaptation.id
         value = adaptation.value
         # Properly execute the select statement
         result = await db_session.execute(

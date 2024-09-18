@@ -17,10 +17,10 @@ class NatureBasedSolutionBase(BaseModel):
 class NatureBasedSolutionCreate(NatureBasedSolutionBase):
     adaptations: List[AssociationRead] = Field(
         default_factory=list,
-        description="List of AdaptationTarget and their corresponding values",
+        description="List of adaptation types and their corresponding values",
         example=[
-            {"target": {"id": 1, "target": "Heat"}, "value": 10},
-            {"target": {"id": 2, "target": "Pluvial Flooding"}, "value": 20},
+            {"adaptation": {"id": 1, "type": "Heat"}, "value": 10},
+            {"adaptation": {"id": 2, "type": "Pluvial Flooding"}, "value": 20},
         ],
     )
 
@@ -33,10 +33,10 @@ class NatureBasedSolutionUpdate(BaseModel):
     location: Optional[str] = Field(None, example="Updated Coastal Area Y")
     adaptations: Optional[List[AssociationRead]] = Field(
         None,
-        description="Optional list of AdaptationTarget and their corresponding values",
+        description="List of adaptation types and their corresponding values",
         example=[
-            {"target": {"id": 1, "target": "Heat"}, "value": 10},
-            {"target": {"id": 2, "target": "Pluvial Flooding"}, "value": 20},
+            {"adaptation": {"id": 1, "type": "Heat"}, "value": 10},
+            {"adaptation": {"id": 2, "type": "Pluvial Flooding"}, "value": 20},
         ],
     )
 
