@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, conint
 
 
 class AdaptationTargetBase(BaseModel):
@@ -16,4 +16,4 @@ class AdaptationTargetRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     adaptation: AdaptationTargetBase
-    value: int
+    value: conint(ge=0, le=100)
