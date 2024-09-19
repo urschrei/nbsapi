@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -56,12 +56,15 @@ async def get_filtered_solutions(
     query = select(NbsDBModel)
     if targets:
         query = query.join(Association).join(AdaptationTarget)
-        # add WHERE clauses for each target
-        for target in targets:
-            query = query.where(
-                AdaptationTarget.target == target.adaptation.type
-            ).where(Association.value == target.value)
-    res = (await db_session.scalars(query)).unique()
+        # add WHERE clauses encompassing both fields for each target
+        clauses = or_(
+            and_(
+                AdaptationTarget.target == target.adaptation.type,
+                Association.value == target.value,
+            )
+            for target in targets
+        )
+    res = (await db_session.scalars(query.where(clauses))).unique()
     if res:
         res = [await build_nbs_schema_from_model(model) for model in res]
     return res
