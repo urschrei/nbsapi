@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -46,6 +48,23 @@ async def get_solution(db_session: AsyncSession, solution_id: int):
     if not solution:
         raise HTTPException(status_code=404, detail="Solution not found")
     return await build_nbs_schema_from_model(solution)
+
+
+async def get_filtered_solutions(
+    db_session: AsyncSession, targets: Optional[List[AdaptationTargetRead]]
+):
+    query = select(NbsDBModel)
+    if targets:
+        query = query.join(Association).join(AdaptationTarget)
+        # add WHERE clauses for each target
+        for target in targets:
+            query = query.where(
+                AdaptationTarget.target == target.adaptation.type
+            ).where(Association.value == target.value)
+    res = (await db_session.scalars(query)).unique()
+    if res:
+        res = [await build_nbs_schema_from_model(model) for model in res]
+    return res
 
 
 async def create_nature_based_solution(
