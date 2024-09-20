@@ -17,7 +17,7 @@ Ensure that you have [`uv`](https://docs.astral.sh/uv/) installed.
 ## Database
 We're using SQLAlchemy and [alembic](https://alembic.sqlalchemy.org/en/latest/).
 
-You'll need a Postgres database named `nbsapi`, with a user and password both set as `nbsapi`. Once that's set up, run `uv run alembic upgrade head` to migrate to the current state of the DB.
+You'll need a Postgres database named `nbsapi`, with a user and password both set as `nbsapi`. Once that's set up, run `uv run alembic upgrade head` to migrate to the current state of the DB. Ensure that PostGIS is installed: in a SQL console: `CREATE EXTENSION postgis;`
 
 To run a migration:
 
