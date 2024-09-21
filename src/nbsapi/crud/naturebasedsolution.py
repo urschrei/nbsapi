@@ -1,9 +1,10 @@
 from typing import List, Optional
 
 from fastapi import HTTPException
-from sqlalchemy import and_, or_, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import aliased, joinedload
+from sqlalchemy.sql import distinct
 
 from nbsapi.models import AdaptationTarget, Association
 from nbsapi.models import NatureBasedSolution as NbsDBModel
@@ -55,16 +56,30 @@ async def get_filtered_solutions(
 ):
     query = select(NbsDBModel)
     if targets:
-        query = query.join(Association).join(AdaptationTarget)
-        # add WHERE clauses encompassing both fields for each target
-        clauses = or_(
-            and_(
-                AdaptationTarget.target == target.adaptation.type,
-                Association.value == target.value,
+        # Build an alias per incoming adaptation target. These are anonymous
+        assoc_aliases = [aliased(Association) for target in targets]
+        target_aliases = [aliased(AdaptationTarget) for target in targets]
+        # Build a CTE per incoming adaptation target, also anonymous
+        condition_sets = [
+            (
+                select(distinct(assoc_aliases[i].nbs_id).label("nbs_id"))
+                .join(
+                    target_aliases[i],
+                    assoc_aliases[i].target_id == target_aliases[i].id,
+                )
+                .where(
+                    (target_aliases[i].target == target.adaptation.type)
+                    & (assoc_aliases[i].value == target.value)
+                )
+                .cte()
             )
-            for target in targets
-        )
-    res = (await db_session.scalars(query.where(clauses))).unique()
+            for i, target in enumerate(targets)
+        ]
+        # chain conditions as WHERE clauses
+        for cset in condition_sets:
+            query = query.where(NbsDBModel.id.in_(select(cset.c.nbs_id)))
+
+    res = (await db_session.scalars(query)).unique()
     if res:
         res = [await build_nbs_schema_from_model(model) for model in res]
     return res
