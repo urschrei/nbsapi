@@ -62,18 +62,18 @@ async def get_filtered_solutions(
         # Build a CTE per incoming adaptation target, also anonymous
         condition_sets = [
             (
-                select(distinct(assoc_aliases[i].nbs_id).label("nbs_id"))
+                select(distinct(assoc.nbs_id).label("nbs_id"))
                 .join(
-                    target_aliases[i],
-                    assoc_aliases[i].target_id == target_aliases[i].id,
+                    mtarget,
+                    assoc.target_id == mtarget.id,
                 )
                 .where(
-                    (target_aliases[i].target == target.adaptation.type)
-                    & (assoc_aliases[i].value == target.value)
+                    (mtarget.target == target.adaptation.type)
+                    & (assoc.value == target.value)
                 )
                 .cte()
             )
-            for i, target in enumerate(targets)
+            for assoc, mtarget, target in zip(assoc_aliases, target_aliases, targets)
         ]
         # chain conditions as WHERE clauses
         for cset in condition_sets:
