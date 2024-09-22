@@ -51,32 +51,34 @@ async def get_solution(db_session: AsyncSession, solution_id: int):
     return await build_nbs_schema_from_model(solution)
 
 
+def build_cte(target, assoc_alias, target_alias):
+    """
+    Build an aliased CTE for Association and AdaptationTarget
+    """
+    return (
+        select(distinct(assoc_alias.nbs_id).label("nbs_id"))
+        .join(target_alias, assoc_alias.target_id == target_alias.id)
+        .where(
+            (target_alias.target == target.adaptation.type)
+            & (assoc_alias.value == target.value)
+        )
+        .cte()
+    )
+
+
 async def get_filtered_solutions(
     db_session: AsyncSession, targets: Optional[List[AdaptationTargetRead]]
 ):
     query = select(NbsDBModel)
     if targets:
-        # Build an alias per incoming adaptation target. These are anonymous
-        assoc_aliases = [aliased(Association) for target in targets]
-        target_aliases = [aliased(AdaptationTarget) for target in targets]
-        # Build a CTE per incoming adaptation target, also anonymous
+        # generate CTEs for each Target and adaptation value in the incoming API query
         condition_sets = [
-            (
-                select(distinct(assoc.nbs_id).label("nbs_id"))
-                .join(
-                    mtarget,
-                    assoc.target_id == mtarget.id,
-                )
-                .where(
-                    (mtarget.target == target.adaptation.type)
-                    & (assoc.value == target.value)
-                )
-                .cte()
-            )
-            for assoc, mtarget, target in zip(assoc_aliases, target_aliases, targets)
+            build_cte(target, aliased(Association), aliased(AdaptationTarget))
+            for target in targets
         ]
-        # chain conditions as WHERE clauses
+
         for cset in condition_sets:
+            # dynamically add WHERE clauses from the generated CTEs
             query = query.where(NbsDBModel.id.in_(select(cset.c.nbs_id)))
 
     res = (await db_session.scalars(query)).unique()
