@@ -60,7 +60,7 @@ def build_cte(target, assoc_alias, target_alias):
         .join(target_alias, assoc_alias.target_id == target_alias.id)
         .where(
             (target_alias.target == target.adaptation.type)
-            & (assoc_alias.value == target.value)
+            & (assoc_alias.value >= target.value)
         )
         .cte()
     )

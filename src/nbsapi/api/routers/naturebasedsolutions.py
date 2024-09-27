@@ -33,11 +33,12 @@ async def read_nature_based_solution(solution_id: int, db_session: DBSessionDep)
 async def get_solutions(
     db_session: DBSessionDep,
     targets: List[AdaptationTargetRead] = Body(
-        None, description="List of adaptation targets to filter by with values > 1"
+        None, description="List of adaptation targets to filter by"
     ),
 ):
     """
-    Filter solutions based on **optional** adaptation targets and their associated protection values
+    Filter solutions based on **optional** adaptation targets and their associated protection values.
+    Solutions having targets with protection values **equal to or greater than** the specified values will be returned
     """
     # TODO: add optional bounding box and polygon params when we have PostGIS and geometry column
     solutions = await get_filtered_solutions(db_session, targets)
