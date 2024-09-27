@@ -9,6 +9,7 @@ COPY pyproject.toml ./
 COPY README.md ./
 COPY LICENSE.md ./
 COPY src ./src
+COPY alembic.ini ./alembic.ini
 RUN .venv/bin/pip install .
 FROM python:3.12-slim
 WORKDIR /app
