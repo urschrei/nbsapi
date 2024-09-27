@@ -14,6 +14,5 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY --from=builder /app/.venv .venv/
 COPY . .
-# CMD ["/app/.venv/bin/fastapi", "run"]
 
-CMD ["/app/.venv/bin/uvicorn", "nbsapi.api:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "uvicorn", "nbsapi.main:app", "--host 0.0.0.0", "--port", "8000"]
