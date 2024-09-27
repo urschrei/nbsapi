@@ -8,37 +8,37 @@ from nbsapi.schemas.adaptationtarget import (
 
 
 class NatureBasedSolutionBase(BaseModel):
-    name: str = Field(..., example="Coastal Restoration")
-    definition: str = Field(..., example="Definition of the solution")
-    cobenefits: str = Field(..., example="Improved biodiversity")
-    specificdetails: str = Field(..., example="Detailed information")
-    location: str = Field(..., example="Coastal Area X")
+    name: str = Field(..., examples=["Coastal Restoration"])
+    definition: str = Field(..., examples=["Definition of the solution"])
+    cobenefits: str = Field(..., examples=["Improved biodiversity"])
+    specificdetails: str = Field(..., examples=["Detailed information"])
+    location: str = Field(..., examples=["Coastal Area X"])
 
 
 class NatureBasedSolutionCreate(NatureBasedSolutionBase):
     adaptations: List[AdaptationTargetRead] = Field(
         default_factory=list,
         description="List of adaptation types and their corresponding values",
-        example=[
+        examples=[[
             {"adaptation": {"id": 1, "type": "Heat"}, "value": 10},
             {"adaptation": {"id": 2, "type": "Pluvial Flooding"}, "value": 20},
-        ],
+        ]],
     )
 
 
 class NatureBasedSolutionUpdate(BaseModel):
-    name: Optional[str] = Field(None, example="Riprap")
-    definition: Optional[str] = Field(None, example="Updated definition")
-    cobenefits: Optional[str] = Field(None, example="Enhanced ecosystem services")
-    specificdetails: Optional[str] = Field(None, example="Updated detailed information")
-    location: Optional[str] = Field(None, example="Updated Coastal Area Y")
+    name: Optional[str] = Field(None, examples=["Riprap"])
+    definition: Optional[str] = Field(None, examples=["Updated definition"])
+    cobenefits: Optional[str] = Field(None, examples=["Enhanced ecosystem services"])
+    specificdetails: Optional[str] = Field(None, examples=["Updated detailed information"])
+    location: Optional[str] = Field(None, examples=["Updated Coastal Area Y"])
     adaptations: Optional[List[AdaptationTargetRead]] = Field(
         None,
         description="List of adaptation types and their corresponding values",
-        example=[
+        examples=[[
             {"adaptation": {"id": 1, "type": "Heat"}, "value": 10},
             {"adaptation": {"id": 2, "type": "Pluvial Flooding"}, "value": 20},
-        ],
+        ]],
     )
 
 

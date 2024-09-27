@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict, conint
+from pydantic import Field, BaseModel, ConfigDict
+from typing_extensions import Annotated
 
 
 class AdaptationTargetBase(BaseModel):
@@ -16,4 +17,4 @@ class AdaptationTargetRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     adaptation: AdaptationTargetBase
-    value: conint(ge=0, le=100)
+    value: Annotated[int, Field(ge=0, le=100)]
