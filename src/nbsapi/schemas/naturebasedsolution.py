@@ -1,7 +1,8 @@
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
-from schemas.adaptationtarget import (
+
+from nbsapi.schemas.adaptationtarget import (
     AdaptationTargetRead,
 )
 
