@@ -9,7 +9,7 @@ primary_region = 'ams'
 [build]
 
 [deploy]
-  release_command = 'uv run alembic upgrade head'
+  release_command = 'alembic upgrade head'
   strategy = 'bluegreen'
 
 [http_service]

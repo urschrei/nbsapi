@@ -45,7 +45,10 @@ RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/.venv .venv/
+COPY --from=builder /app/.venv /app/.venv
+ENV VIRTUAL_ENV=/app/.venv
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 COPY . .
 
-CMD ["uv", "run", "uvicorn", "nbsapi.main:app", "--host 0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "nbsapi.main:app", "--host 0.0.0.0", "--port", "8000"]
