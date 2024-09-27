@@ -1,0 +1,43 @@
+from __future__ import annotations
+
+from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from . import Base
+
+
+class Association(Base):
+    __tablename__ = "nbs_target_assoc"
+    nbs_id: Mapped[int] = mapped_column(
+        ForeignKey("naturebasedsolution.id"), primary_key=True
+    )
+    target_id: Mapped[int] = mapped_column(
+        ForeignKey("adaptationtarget.id"), primary_key=True
+    )
+    tg = relationship("AdaptationTarget", lazy="joined", back_populates="solutions")
+
+    solution = relationship("NatureBasedSolution", back_populates="solution_targets")
+    value: Mapped[int]
+
+    @property
+    def target_obj(self):
+        return self.tg
+
+
+class NatureBasedSolution(Base):
+    __tablename__ = "naturebasedsolution"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(index=True, unique=True)
+    definition: Mapped[str] = mapped_column(index=True)
+    cobenefits: Mapped[str] = mapped_column(index=True)
+    specificdetails: Mapped[str] = mapped_column(index=True)
+    location: Mapped[str] = mapped_column(index=True)
+
+    solution_targets = relationship(
+        "Association",
+        back_populates="solution",
+        lazy="joined",
+        collection_class=list,
+        cascade="all, delete-orphan",
+    )
+    # TODO: geometry
