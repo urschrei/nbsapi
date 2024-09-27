@@ -51,4 +51,4 @@ ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 COPY . .
 
-CMD ["uvicorn", "nbsapi.main:app", "--host 0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "nbsapi.main:app", "--host", "0.0.0.0", "--port", "8000"]
