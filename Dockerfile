@@ -1,4 +1,13 @@
-FROM python:3.12 AS builder
+FROM python:3.12-slim as builder
+SHELL ["/bin/bash", "--login", "-c"]
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends libpq-dev \
+    curl \
+    ca-certificates \
+    git \
+    build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -9,6 +18,7 @@ ADD https://astral.sh/uv/install.sh /uv-installer.sh
 # Run the installer then remove it
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
+ADD . /app
 WORKDIR /app
 
 # Create and "activate" the virtual environment, and sync deps
@@ -28,6 +38,12 @@ COPY src ./src
 COPY alembic.ini ./alembic.ini
 
 FROM python:3.12-slim
+# Install essential packages (only Postgres atm)
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends libpq5
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=builder /app/.venv .venv/
 COPY . .
