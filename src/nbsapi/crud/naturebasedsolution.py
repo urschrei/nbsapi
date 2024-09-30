@@ -1,7 +1,10 @@
 from typing import List, Optional
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from geoalchemy2 import Geography, Geometry
+from geoalchemy2 import functions as geo_func
+from geoalchemy2.elements import WKTElement
+from sqlalchemy import cast, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.sql import distinct
@@ -14,6 +17,27 @@ from nbsapi.schemas.naturebasedsolution import (
     NatureBasedSolutionCreate,
     NatureBasedSolutionRead,
 )
+
+
+async def get_intersecting_geometries(
+    db_session: AsyncSession, bbox: Optional[List[float]]
+):
+    MAX_BBOX_AREA = 1_000_000.0
+    polygon_geom = geo_func.ST_MakeEnvelope(bbox[0], bbox[1], bbox[2], bbox[3], 4326)
+    geodesic_area = (
+        await db_session.execute(geo_func.ST_Area(cast(polygon_geom, Geography)))
+    ).scalar()
+    if geodesic_area > MAX_BBOX_AREA:
+        raise HTTPException(
+            status_code=400,
+            detail="GeoJSON input area exceeds the maximum limit of 1 square kilometer.",
+        )
+
+    # Query to find intersecting geometries
+    query = select(NbsDBModel).where(
+        geo_func.ST_Intersects(NbsDBModel.geometry, polygon_geom)
+    )
+    return query
 
 
 async def build_nbs_schema_from_model(db_solution: NbsDBModel):
@@ -67,9 +91,13 @@ def build_cte(target, assoc_alias, target_alias):
 
 
 async def get_filtered_solutions(
-    db_session: AsyncSession, targets: Optional[List[AdaptationTargetRead]]
+    db_session: AsyncSession,
+    targets: Optional[List[AdaptationTargetRead]],
+    bbox: Optional[List[float]],
 ):
     query = select(NbsDBModel)
+    if bbox:
+        query = await get_intersecting_geometries(db_session, bbox)
     if targets:
         # generate CTEs for each Target and adaptation value in the incoming API query
         condition_sets = [
