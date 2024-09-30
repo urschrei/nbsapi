@@ -86,6 +86,19 @@ wheels = [
 ]
 
 [[package]]
+name = "geoalchemy2"
+version = "0.15.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a1/38/bac6dce23250751ce448f5d21b31aed68b2ac5d8a8b4ca267b9a44c12dd4/geoalchemy2-0.15.2.tar.gz", hash = "sha256:3af0272db927373e74ee3b064cdc9464ba08defdb945c51745db1b841482f5dc", size = 225642 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6e/f7/a71bbed7252af7db0746b81b83d68bd400f169e49d3726072e547774d949/GeoAlchemy2-0.15.2-py3-none-any.whl", hash = "sha256:546455dc39f5bcdfc5b871e57d3f7546c8a6f798eb364c474200f488ace6fd32", size = 73601 },
+]
+
+[[package]]
 name = "geojson"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -213,6 +226,7 @@ source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "fastapi" },
+    { name = "geoalchemy2" },
     { name = "geojson" },
     { name = "greenlet" },
     { name = "httpx" },
@@ -229,6 +243,7 @@ dependencies = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.13.2" },
     { name = "fastapi", specifier = ">=0.112.2" },
+    { name = "geoalchemy2", specifier = ">=0.15.2" },
     { name = "geojson", specifier = ">=3.1.0" },
     { name = "greenlet", specifier = ">=3.1.0" },
     { name = "httpx", specifier = ">=0.27.2" },
