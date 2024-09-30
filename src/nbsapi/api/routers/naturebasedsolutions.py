@@ -35,13 +35,27 @@ async def get_solutions(
     targets: List[AdaptationTargetRead] = Body(
         None, description="List of adaptation targets to filter by"
     ),
+    bbox: Optional[List[float]] = Body(
+        None,
+        min_items=4,
+        max_items=4,
+        description="Bounding box specified as [west, south, east, north]. The list should contain exactly four float values. Max 1 sq km",
+        examples=[
+            [
+                -73.968,
+                40.781,
+                -73.962,
+                40.784,
+            ]
+        ],
+    ),
 ):
     """
     Filter solutions based on **optional** adaptation targets and their associated protection values.
     Solutions having targets with protection values **equal to or greater than** the specified values will be returned
     """
     # TODO: add optional bounding box and polygon params when we have PostGIS and geometry column
-    solutions = await get_filtered_solutions(db_session, targets)
+    solutions = await get_filtered_solutions(db_session, targets, bbox)
     return solutions
 
 
