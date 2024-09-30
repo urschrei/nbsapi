@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from geoalchemy2 import Geometry, WKBElement
 from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -32,6 +33,9 @@ class NatureBasedSolution(Base):
     cobenefits: Mapped[str] = mapped_column(index=True)
     specificdetails: Mapped[str] = mapped_column(index=True)
     location: Mapped[str] = mapped_column(index=True)
+    geometry: Mapped[WKBElement] = mapped_column(
+        Geometry("GEOMETRY", srid=4326), spatial_index=True, nullable=True
+    )
 
     solution_targets = relationship(
         "Association",

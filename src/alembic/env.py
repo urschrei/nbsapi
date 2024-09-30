@@ -2,6 +2,7 @@ import asyncio
 import os
 from logging.config import fileConfig
 
+from geoalchemy2 import alembic_helpers
 from psycopg import Connection
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
@@ -50,7 +51,13 @@ def run_migrations_offline():
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_object=alembic_helpers.include_object,
+        process_revision_directives=alembic_helpers.writer,
+        render_item=alembic_helpers.render_item,
+    )
 
     with context.begin_transaction():
         context.run_migrations()
