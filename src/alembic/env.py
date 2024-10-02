@@ -24,7 +24,6 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    print("URL", settings.database_url)
     return settings.database_url
 
 
@@ -70,7 +69,6 @@ async def run_migrations_online():
     """
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
-    print("config", configuration)
     connectable = async_engine_from_config(
         configuration,
         prefix="sqlalchemy.",
