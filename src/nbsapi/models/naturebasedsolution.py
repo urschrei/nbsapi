@@ -44,4 +44,3 @@ class NatureBasedSolution(Base):
         collection_class=list,
         cascade="all, delete-orphan",
     )
-    # TODO: geometry
