@@ -26,8 +26,14 @@ def inject_driver(connection_string, driver="psycopg"):
 
     """
     parsed = urlparse(connection_string)
-    if parsed.scheme == "postgres":
+    if parsed.scheme == "postgres" and "+" not in parsed.scheme:
         scheme = "postgresql"
+    elif "+" in parsed.scheme:
+        scheme, driver = parsed.scheme.split("+")
+        # remove the driver so the scheme can be properly parsed for possible modification, then recur
+        return inject_driver(
+            parsed._replace(scheme=f"{scheme}").geturl(), driver=driver
+        )
     else:
         scheme = parsed.scheme
     # inject driver into connection string
