@@ -2,8 +2,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
 
-class AdaptationTargetBase(BaseModel):
-    "An adaptation target"
+class TargetBase(BaseModel):
+    "A type of climate adaptation"
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -11,12 +11,12 @@ class AdaptationTargetBase(BaseModel):
 
 
 class AdaptationTargetRead(BaseModel):
-    "Adaptation targets associated with a Nature-Based Solution"
+    "Adaptation targets are instances of `TargetBase` associated with a Nature-Based Solution, each target having an associated value 0 - 100"
 
     model_config = ConfigDict(
         json_schema_extra={"examples": [{"adaptation": {"type": "Heat"}, "value": 80}]},
         from_attributes=True,
     )
 
-    adaptation: AdaptationTargetBase
+    adaptation: TargetBase
     value: Annotated[int, Field(ge=0, le=100)]

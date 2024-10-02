@@ -11,7 +11,7 @@ from sqlalchemy.sql import distinct
 
 from nbsapi.models import AdaptationTarget, Association
 from nbsapi.models import NatureBasedSolution as NbsDBModel
-from nbsapi.schemas.adaptationtarget import AdaptationTargetBase
+from nbsapi.schemas.adaptationtarget import TargetBase
 from nbsapi.schemas.naturebasedsolution import (
     AdaptationTargetRead,
     NatureBasedSolutionCreate,
@@ -53,7 +53,7 @@ async def build_nbs_schema_from_model(db_solution: NbsDBModel):
         location=db_solution.location,
         adaptations=[
             AdaptationTargetRead(
-                adaptation=AdaptationTargetBase(id=assoc.tg.id, type=assoc.tg.target),
+                adaptation=TargetBase(id=assoc.tg.id, type=assoc.tg.target),
                 value=assoc.value,
             )
             for assoc in db_solution.solution_targets

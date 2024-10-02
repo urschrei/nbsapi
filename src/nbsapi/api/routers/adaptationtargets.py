@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 
 from nbsapi.api.dependencies.core import DBSessionDep
 from nbsapi.crud.adaptationtarget import get_target, get_targets
-from nbsapi.schemas.adaptationtarget import AdaptationTargetBase
+from nbsapi.schemas.adaptationtarget import TargetBase
 
 router = APIRouter(
     prefix="/api/targets",
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/target", response_model=List[AdaptationTargetBase])
+@router.get("/target", response_model=List[TargetBase])
 async def read_targets(db_session: DBSessionDep):
     """Retrieve all available adaptation targets"""
     targets = await get_targets(db_session)
