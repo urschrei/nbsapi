@@ -51,8 +51,11 @@ async def get_solutions(
     ),
 ):
     """
-    Filter solutions based on **optional** adaptation targets and their associated protection values.
-    Solutions having targets with protection values **equal to or greater than** the specified values will be returned
+    Return a list of nature-based solutions using _optional_ filter criteria:
+
+    - `targets`: An array of one or more **adaptation targets** and their associated protection values. Solutions having targets with protection values **equal to or greater than** the specified values will be returned
+    - `bbox`: An array of 4 EPSG 4326 coordinates. Only solutions intersected by the bbox will be returned. It must be **<=** 1 km sq
+
     """
     # TODO: add optional bounding box and polygon params when we have PostGIS and geometry column
     solutions = await get_filtered_solutions(db_session, targets, bbox)
