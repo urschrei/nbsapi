@@ -1,5 +1,6 @@
 import contextlib
 from typing import Any, AsyncIterator
+from urllib.parse import urlparse
 
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -12,6 +13,26 @@ from sqlalchemy.orm import declarative_base
 from nbsapi.config import settings
 
 Base = declarative_base()
+
+
+def inject_driver(connection_string, driver="psycopg"):
+    """
+    Modify raw database connection string with the appropriate driver, defaulting to psycopg3
+
+    We need this because SQLAlchemy doesn't accept postgres:// connection strings, as these are
+    deprecated. However, many providers (such as Fly) continue to use it.
+    Instead, we intercept the string, parse it, substitute 'postgresql' if necessary, and inject
+    the psycopg3 driver (named 'psycopg', confusingly) by default
+
+    """
+    parsed = urlparse(connection_string)
+    if parsed.scheme == "postgres":
+        scheme = "postgresql"
+    else:
+        scheme = parsed.scheme
+    # inject driver into connection string
+    replaced = parsed._replace(scheme=f"{scheme}+{driver}").geturl()
+    return replaced
 
 
 class DatabaseSessionManager:
@@ -55,7 +76,7 @@ class DatabaseSessionManager:
 
 
 sessionmanager = DatabaseSessionManager(
-    settings.database_url, {"echo": settings.echo_sql}
+    inject_driver(settings.database_url), {"echo": settings.echo_sql}
 )
 
 
