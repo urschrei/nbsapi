@@ -32,7 +32,7 @@ async def read_nature_based_solution(solution_id: int, db_session: DBSessionDep)
 @router.post("/solutions", response_model=List[NatureBasedSolutionRead])
 async def get_solutions(
     db_session: DBSessionDep,
-    targets: List[AdaptationTargetRead] = Body(
+    targets: Optional[List[AdaptationTargetRead]] = Body(
         None, description="List of adaptation targets to filter by"
     ),
     bbox: Optional[List[float]] = Body(
