@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from nbsapi.config import settings
+from nbsapi.database import inject_driver
 from nbsapi.models import Base
 
 # this is the Alembic Config object, which provides
@@ -24,7 +25,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return settings.database_url
+    return inject_driver(settings.database_url)
 
 
 def run_migrations_offline():
