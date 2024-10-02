@@ -25,6 +25,7 @@ router = APIRouter(
 
 @router.get("/solutions/{solution_id}", response_model=NatureBasedSolutionRead)
 async def read_nature_based_solution(solution_id: int, db_session: DBSessionDep):
+    """Retrieve a nature-based solution using its ID"""
     solution = await get_solution(db_session, solution_id)
     return solution
 
@@ -66,5 +67,10 @@ async def get_solutions(
 async def write_nature_based_solution(
     solution: NatureBasedSolutionCreate, db_session: DBSessionDep
 ):
+    """
+    Add a nature-based solution. The payload must be a `NatureBasedSolutionRead` object.
+    Its `adaptations` array must contain one or more valid `AdaptationTargetRead` objects
+
+    """
     solution = await create_nature_based_solution(db_session, solution)
     return solution
