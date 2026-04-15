@@ -34,7 +34,7 @@ dependencies = [
     "psycopg>=3.2.1",
     "pydantic-settings>=2.5.2",
     "pyjwt>=2.9.0",
-    "python-multipart==0.0.18",
+    "python-multipart==0.0.26",
     "shapely>=2.0.6",
     "sqlmodel>=0.0.22",
     "uvicorn>=0.32.0",
